@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Bubba Sawyer",
+      "email": "leatherface@gmail.ru"
+    },
+    {
+      "id": 2,
+      "name": "Michael Myers",
+      "email": "mmyers@gmail.ru",
+      "password": "963852"
+    },
+    {
+      "id": 3,
+      "name": "Jason Voorhees",
+      "email": "jsonv@gmail.ru"
+    },
+    {
+      "email": "mmyers@gmail.ru",
+      "password": "963852",
+      "id": 4
+    },
+    {
+      "email": "mmyers@gmail.ru",
+      "password": "963852",
+      "id": 5
+    },
+    {
+      "email": "mmyers@gmail.ru",
+      "password": "963852",
+      "id": 6
+    },
+    {
+      "email": "mmyers@gmail.ru",
+      "password": "963852",
+      "id": 7
+    }
+  ]
+}
