@@ -5,33 +5,16 @@ import { useAppDispatch } from "../store/hooks";
 import { getUser } from "../store/authSlice";
 
 const Login = () => {
-  const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
 
-  const [
-    auth,
-    {
-      data: authData,
-      isSuccess: authSuccess,
-      isError: isAuthError,
-      error: authError,
-    },
-  ] = useAuthMutation();
+  const [auth, { data, isSuccess }] = useAuthMutation();
 
   const dispatch = useAppDispatch();
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   dispatch(
-  //     login({ name: name, email: email, password: password, loggedIn: true })
-  //   );
-  //   navigate("/");
-  // };
-
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (email && password) {
       await auth({ email, password });
     }
@@ -39,31 +22,34 @@ const Login = () => {
   };
 
   React.useEffect(() => {
-    if (authSuccess) {
-      dispatch(getUser({ user: authData.result.user, token: authData.token }));
+    if (isSuccess) {
+      dispatch(getUser({ token: data.accessToken, userId: data.user.id }));
       navigate("/");
+      localStorage.setItem("token", data.accessToken);
     }
   });
 
   return (
-    <div className="login">
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="e-mail"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="пароль"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit" className="login-btn" onClick={() => handleLogin()}>
-        Авторизация
-      </button>
-    </div>
+    <form onSubmit={handleLogin}>
+      <div className="form-container">
+        <h2 className="form-title">Вход</h2>
+        <input
+          type="email"
+          placeholder="e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit" className="login-btn">
+          Авторизация
+        </button>
+      </div>
+    </form>
   );
 };
 
