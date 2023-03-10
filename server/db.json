@@ -4,6 +4,31 @@
       "email": "leatherface@mail.ru",
       "password": "$2a$10$jt4P0hPLRm33vnDh1q0gQeBNuNb5UdnQgsVgpUAuqygEb0BfUSl32",
       "id": 1
+    },
+    {
+      "email": "mmyers@gmail.com",
+      "password": "$2a$10$t0fBrHxmI3pXbdzJT4choekYiDb5y70Y1DnDDDhHd.ZZCtSpZnEoa",
+      "id": 2
+    }
+  ],
+  "contacts": [
+    {
+      "id": "7a5d",
+      "name": "David",
+      "surname": "",
+      "userId": 1
+    },
+    {
+      "id": "Hzvt",
+      "name": "Megan",
+      "surname": "",
+      "userId": 1
+    },
+    {
+      "id": "5T2p",
+      "name": "Ace",
+      "surname": "",
+      "userId": 1
     }
   ]
 }

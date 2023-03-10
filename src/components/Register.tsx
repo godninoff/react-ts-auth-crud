@@ -1,22 +1,22 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthMutation } from "../store/api/authApi";
+import { useRegisterMutation } from "../store/api/authApi";
 import { useAppDispatch } from "../store/hooks";
 import { getUserData } from "../store/authSlice";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
 
-  const [auth, { data, isSuccess }] = useAuthMutation();
+  const [register, { data, isSuccess }] = useRegisterMutation();
 
   const dispatch = useAppDispatch();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {
-      await auth({ email, password });
+      await register({ email, password });
     }
     console.error("error");
   };
@@ -25,13 +25,15 @@ const Login = () => {
     if (isSuccess) {
       dispatch(getUserData({ token: data.accessToken, userId: data.user.id }));
       navigate("/");
+      //   localStorage.setItem("token", data.accessToken);
+      // setUserId(+data.user.id);
     }
   });
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleRegister}>
       <div className="form-container">
-        <h2 className="form-title">Вход</h2>
+        <h2 className="form-title">Регистрация</h2>
         <input
           type="email"
           placeholder="e-mail"
@@ -44,19 +46,10 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setEmail("leatherface@mail.ru");
-            setPassword("963852741");
-          }}
-        >
-          Заполнить данные тестового пользователя
-        </button>
-        <button>Авторизация</button>
+        <button>Зарегистрироваться</button>
       </div>
     </form>
   );
 };
 
-export default Login;
+export default Register;

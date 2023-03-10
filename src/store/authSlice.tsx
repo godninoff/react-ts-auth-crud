@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { store } from "./store";
-
-export interface Auth {
-  userId: number | null;
-  token: string | null;
-}
+import { Auth } from "./types";
 
 const initialState: Auth = {
   userId: null,
@@ -15,7 +11,7 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    getUser: (
+    getUserData: (
       state,
       action: PayloadAction<{ userId: number; token: string }>
     ) => {
@@ -26,10 +22,11 @@ export const authSlice = createSlice({
       state.userId = null;
       state.token = null;
     },
+    getUserId: (state) => state,
   },
 });
 
-export const { getUser, signOut } = authSlice.actions;
+export const { getUserData, signOut, getUserId } = authSlice.actions;
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
