@@ -1,22 +1,20 @@
-import { nanoid } from "@reduxjs/toolkit";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../../store/authSlice";
-import { useAddContactMutation } from "../../store/api/contactsApi";
-
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useAppDispatch } from "../../store/hooks";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 import Contacts from "./Contacts/Contacts";
+import Modal from "./Modal/Modal";
 
 const MainPage = () => {
-  const [contactName, setContactName] = React.useState("");
-  const [contactSurname, setContactSurname] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const userId = useAppSelector((state) => state.auth.userId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const [addContact] = useAddContactMutation();
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -25,36 +23,30 @@ const MainPage = () => {
     navigate("/login");
   };
 
-  const handleAddContact = async () => {
-    if (userId)
-      await addContact({
-        id: nanoid(4),
-        name: contactName,
-        surname: contactSurname,
-        userId,
-      });
-    setContactName("");
-    setContactSurname("");
-  };
-
   return (
     <div className="main-page-container">
-      Страница авторизованного пользователя
-      <button onClick={handleLogout}>Выйти из аккаунта</button>
-      <input
-        type="text"
-        placeholder="Имя"
-        value={contactName}
-        onChange={(e) => setContactName(e.target.value)}
-      ></input>
-      <input
-        type="text"
-        placeholder="Фамилия"
-        value={contactSurname}
-        onChange={(e) => setContactSurname(e.target.value)}
-      ></input>
-      <button onClick={handleAddContact}>Добавить контакт</button>
+      <div className="main-page-heading">
+        <Stack spacing={2} direction="row">
+          <Button onClick={handleOpen} variant="contained">
+            Новый контакт
+          </Button>
+        </Stack>
+        <div
+          className="main-page-logout-block"
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <LogoutIcon />
+          <button
+            style={{ marginLeft: "10px", width: "50px", margin: "0" }}
+            onClick={handleLogout}
+          >
+            Выйти
+          </button>
+        </div>
+      </div>
+
       <Contacts />
+      <Modal open={open} handleClose={handleClose} setOpen={setOpen} />
     </div>
   );
 };

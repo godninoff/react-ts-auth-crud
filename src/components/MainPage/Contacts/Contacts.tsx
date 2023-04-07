@@ -21,6 +21,7 @@ const Contacts = () => {
 
   const navigate = useNavigate();
   const userId = useAppSelector((state) => state.auth.userId);
+  const token = useAppSelector((state) => state.auth.token);
 
   const { data: contacts, isSuccess } = useGetContactsQuery();
   const [removeContact] = useRemoveContactMutation();
@@ -42,7 +43,7 @@ const Contacts = () => {
   };
 
   React.useEffect(() => {
-    if (!userId) {
+    if (!userId && !token) {
       navigate("/login");
     }
   });

@@ -10,8 +10,17 @@
 .MuiFilledInput-root {
   border-radius: 7px;
 }
-
+.MuiFilledInput-input {
+  box-sizing: border-box !important;
+  height: 50px !important;
+  width: 273px !important;
+}
 .MuiInputBase-root:before,
 .MuiInputBase-root:after {
   display: none;
+}
+
+.MuiBox-root {
+  display: flex;
+  flex-direction: column;
 }

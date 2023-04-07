@@ -1,12 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "../store/api/authApi";
-import { useAppDispatch } from "../store/hooks";
-import { getUserData } from "../store/authSlice";
+import { useAuthMutation } from "../../store/api/authApi";
+import { useAppDispatch } from "../../store/hooks";
+import { getUserData } from "../../store/authSlice";
 import TextField from "@mui/material/TextField";
-import { isFetchBaseQueryError, validEmail, validPsw } from "../utils/utils";
+import "./Login.css";
+import { isFetchBaseQueryError, validEmail, validPsw } from "../../utils/utils";
 
-const Register = () => {
+const Login = () => {
   const [email, setEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState("");
   const [backendError, setBackendError] = React.useState("");
@@ -16,14 +17,15 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  const [register, { data, isSuccess, error }] = useRegisterMutation();
+  const [auth, { data, isSuccess, error }] = useAuthMutation();
 
   const dispatch = useAppDispatch();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (email && password) {
-      await register({ email, password });
+      await auth({ email, password });
     }
   };
 
@@ -67,56 +69,68 @@ const Register = () => {
     }
   }, [error]);
 
-  if (backendError === "Email already exists") {
-    setBackendError(
-      backendError.replace(
-        /Email already exists/gi,
-        "Указаный email уже зарегистрирован"
-      )
-    );
-  }
-
   if (backendError === "Password is too short") {
     setBackendError(
       backendError.replace(
         /Password is too short/gi,
-        "Указаный email уже зарегистрирован"
+        "Пароль должен быть от 4 до 16 символов"
       )
     );
   }
 
+  if (backendError === "Cannot find user") {
+    setBackendError(
+      backendError.replace(
+        /Cannot find user/gi,
+        "Пользователь с таким email не зарегистрирован"
+      )
+    );
+  }
+
+  if (backendError === "Incorrect password") {
+    setBackendError(
+      backendError.replace(/Incorrect password/gi, "Неверный пароль")
+    );
+  }
+
   return (
-    <form onSubmit={handleRegister}>
+    <form onSubmit={handleLogin}>
       <div className="form-container">
-        <h2 className="form-title">Регистрация</h2>
+        <h2 className="form-title">Вход</h2>
         <TextField
+          label="E-mail"
           type="email"
           value={email}
           onChange={(e) => handleEmailChange(e.target.value)}
-          required={true}
-          label="E-mail"
           variant="filled"
+          required={true}
         />
-        {emailError && <span>{emailError}</span>}
-
+        <span>{emailError}</span>
         <TextField
           sx={{
             mt: "10px",
           }}
+          label="Пароль"
           type="password"
           value={password}
           onChange={(e) => handlePswChange(e.target.value)}
-          required={true}
-          label="Пароль"
           variant="filled"
+          required={true}
         />
-
         {backendError ? <span>{backendError}</span> : <span>{pswError}</span>}
-
-        <button>Зарегистрироваться</button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setEmail("leatherface@mail.ru");
+            setPassword("963852741");
+          }}
+        >
+          Заполнить данные тестового пользователя
+        </button>
+        <button>Авторизация</button>
       </div>
     </form>
   );
 };
 
-export default Register;
+export default Login;

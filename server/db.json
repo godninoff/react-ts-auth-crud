@@ -9,6 +9,11 @@
       "email": "mmyers@gmail.com",
       "password": "$2a$10$t0fBrHxmI3pXbdzJT4choekYiDb5y70Y1DnDDDhHd.ZZCtSpZnEoa",
       "id": 2
+    },
+    {
+      "email": "13@aqw.ru",
+      "password": "$2a$10$jwCpn92RxCsRxeMR52a/H.3ZDbczEuI0lOyOCeqvYx2tnMwjfX/1q",
+      "id": 3
     }
   ],
   "contacts": [
