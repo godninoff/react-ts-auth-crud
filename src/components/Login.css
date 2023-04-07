@@ -1,0 +1,17 @@
+.MuiInputBase-root {
+  border-radius: 7px;
+  background-color: #f8f1ff !important;
+}
+
+.MuiFormLabel-root {
+  color: black !important;
+}
+
+.MuiFilledInput-root {
+  border-radius: 7px;
+}
+
+.MuiInputBase-root:before,
+.MuiInputBase-root:after {
+  display: none;
+}

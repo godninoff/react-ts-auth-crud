@@ -31,7 +31,4 @@ export const { getUserData, signOut, getUserId } = authSlice.actions;
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
 
-export const selectUser = (state: RootState) => state.auth.userId;
-export const selectToken = (state: RootState) => state.auth.token;
-
 export default authSlice.reducer;
