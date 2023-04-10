@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+import validationReducer from "./validationSlice";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { authApi } from "./api/authApi";
 import { contactsApi } from "./api/contactsApi";
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [contactsApi.reducerPath]: contactsApi.reducer,
   auth: authReducer,
+  validation: validationReducer,
 });
 
 const persistConfig = {

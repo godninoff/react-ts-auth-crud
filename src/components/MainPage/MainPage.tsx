@@ -6,7 +6,8 @@ import { useAppDispatch } from "../../store/hooks";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Contacts from "./Contacts/Contacts";
-import Modal from "./Modal/Modal";
+import Modal from "./Modals/AddContactModal";
+import AddContactModal from "./Modals/AddContactModal";
 
 const MainPage = () => {
   const [open, setOpen] = React.useState(false);
@@ -45,8 +46,12 @@ const MainPage = () => {
         </div>
       </div>
 
-      <Contacts />
-      <Modal open={open} handleClose={handleClose} setOpen={setOpen} />
+      <Contacts handleOpen={handleOpen} />
+      <AddContactModal
+        open={open}
+        handleClose={handleClose}
+        setOpen={setOpen}
+      />
     </div>
   );
 };

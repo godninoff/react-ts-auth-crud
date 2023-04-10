@@ -98,11 +98,36 @@ button:disabled {
   text-decoration: none;
 }
 
+.contacts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
 .contact {
-  height: 96px;
-  background: #ffffff;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 250px;
+  height: 300px;
+  background: linear-gradient(156.58deg, #fafafa 17.17%, #c2c4cd 84.45%);
+  box-shadow: 1.55897px 1.55897px 9.35384px rgba(84, 127, 185, 0.45);
+  border-radius: 24.9436px;
+}
+
+.contact:hover {
+  -webkit-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.contact-avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 243.977px;
+  margin: 40px 0 20px;
 }
 
 input {
