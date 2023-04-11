@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Contacts from "./Contacts/Contacts";
 import Modal from "./Modals/AddContactModal";
 import AddContactModal from "./Modals/AddContactModal";
+import EditContactModal from "./Modals/EditContactModal";
 
 const MainPage = () => {
   const [open, setOpen] = React.useState(false);
@@ -46,7 +47,7 @@ const MainPage = () => {
         </div>
       </div>
 
-      <Contacts handleOpen={handleOpen} />
+      <Contacts />
       <AddContactModal
         open={open}
         handleClose={handleClose}

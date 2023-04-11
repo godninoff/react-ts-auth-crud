@@ -28,6 +28,7 @@ export const contactsApi = createApi({
         method: "DELETE",
         body: { id },
       }),
+
       invalidatesTags: ["Contacts"],
     }),
     editContact: build.mutation<void, IContact>({

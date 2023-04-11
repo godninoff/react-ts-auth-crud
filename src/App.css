@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400;700&display=swap");
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -13,6 +15,7 @@ body {
   display: flex;
   justify-content: center;
   height: 100vh;
+  font-family: "Roboto Mono", monospace;
 }
 
 form {
@@ -128,6 +131,7 @@ button:disabled {
   height: 75px;
   border-radius: 243.977px;
   margin: 40px 0 20px;
+  object-fit: cover;
 }
 
 input {
@@ -159,4 +163,8 @@ span {
 .MuiButton-root {
   background: #ffffff !important;
   color: black !important;
+}
+
+.MuiBox-root {
+  border: 1px solid #985ace !important;
 }

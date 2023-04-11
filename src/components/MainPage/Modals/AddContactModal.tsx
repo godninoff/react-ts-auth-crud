@@ -1,5 +1,4 @@
 import * as React from "react";
-import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
@@ -14,6 +13,8 @@ import { validationContactName } from "../../../store/validationSlice";
 const AddContactModal = ({ open, handleClose, setOpen }: any) => {
   const [contactName, setContactName] = React.useState("");
   const [contactSurname, setContactSurname] = React.useState("");
+  const [contactAvatar, setContactAvatar] = React.useState("");
+
   const [newContactNameErr, setNewContactNameErr] = React.useState("");
   const [newContactSurnameErr, setNewContactSurnameErr] = React.useState("");
 
@@ -30,34 +31,24 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
     if (userId)
       await addContact({
         id: nanoid(4),
+        avatar: contactAvatar,
         name: contactName,
         surname: contactSurname,
         userId,
       });
     setContactName("");
     setContactSurname("");
+    setContactAvatar("");
     setOpen(false);
   };
 
-  // const handleAddContactName = (newContactName: string) => {
-  //   setContactName(newContactName);
-  //   if (newContactName.length === 0) {
-  //     setDisabledButton(true);
-  //     setNewContactNameErr("Необходимо указать имя");
-  //     return;
-  //   }
-  //   if (!validName.test(newContactName)) {
-  //     setDisabledButton(true);
-  //     setNewContactNameErr("Укажите корректное имя");
-  //     return;
-  //   }
-  //   setDisabledButton(false);
-  //   setNewContactNameErr("");
-  // };
-
   const handleAddContactName = (newContactName: string) => {
     setContactName(newContactName);
-    dispatch(validationContactName(validation));
+    if (newContactName.length === 0) {
+      setDisabledButton(true);
+      setNewContactNameErr("Необходимо указать имя");
+      return;
+    }
     if (!validName.test(newContactName)) {
       setDisabledButton(true);
       setNewContactNameErr("Укажите корректное имя");
@@ -82,23 +73,17 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
     if (contactName === "") {
       setDisabledButton(true);
     }
-  }, [contactName]);
+    if (!open) {
+      setContactName("");
+      setContactSurname("");
+      setContactAvatar("");
+      setNewContactNameErr("");
+      setNewContactSurnameErr("");
+    }
+  }, [contactName, open]);
 
-  // console.log(validation);
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={handleClose}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}
-    >
+    <Modal open={open} onClose={handleClose}>
       <Fade in={open}>
         <Box sx={style}>
           <TextField
@@ -108,7 +93,7 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
             onChange={(e) => handleAddContactName(e.target.value)}
             variant="filled"
           />
-          <span>{validation}</span>
+          <span>{newContactNameErr}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -120,6 +105,16 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
             variant="filled"
           />
           <span>{newContactSurnameErr}</span>
+          <TextField
+            sx={{
+              mt: "10px",
+            }}
+            type="url"
+            label="Ссылка на аватар"
+            value={contactAvatar}
+            onChange={(e) => setContactAvatar(e.target.value)}
+            variant="filled"
+          />
           <button onClick={handleAddContact} disabled={disabledButton}>
             Добавить контакт
           </button>
