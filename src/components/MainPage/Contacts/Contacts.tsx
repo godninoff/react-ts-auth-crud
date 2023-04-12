@@ -1,17 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { IContact } from "../../../store/types";
-import {
-  useEditContactMutation,
-  useGetContactsQuery,
-  useRemoveContactMutation,
-} from "../../../store/api/contactsApi";
+import { useGetContactsQuery } from "../../../store/api/contactsApi";
 import { useAppSelector } from "../../../store/hooks";
 
 import EditContactModal from "../Modals/EditContactModal";
 
-const Contacts = () => {
-  const [editState, setEditState] = React.useState(false);
+type ISearch = {
+  query: string;
+};
+
+const Contacts: React.FC<ISearch> = ({ query }) => {
   const [editContactById, setContactById] = React.useState<IContact>({
     id: "",
     name: "",
@@ -29,66 +27,45 @@ const Contacts = () => {
 
   return (
     <div className="contacts">
-      {/* {editState && (
-        <>
-          <input
-            value={editContactById.name}
-            type="text"
-            onChange={(e) =>
-              setContactById((prev: IContact) => ({
-                ...prev,
-                name: e.target.value,
-              }))
-            }
-          />
-          <input
-            value={editContactById.surname}
-            type="text"
-            onChange={(e) =>
-              setContactById((prev: IContact) => ({
-                ...prev,
-                surname: e.target.value,
-              }))
-            }
-          />
-          <button
-            onClick={() => {
-              handleUpdateContact();
-            }}
-          >
-            Обновить
-          </button>
-        </>
-      )} */}
-
       {isSuccess &&
-        (!editState && contacts.length > 0
-          ? contacts.map((contact: IContact) => {
-              return contact.userId === userId ? (
-                <div key={contact.id} className="contact">
-                  <>
-                    <img
-                      className="contact-avatar"
-                      alt="фото контакта"
-                      src={contact.avatar}
-                    />
+        (contacts.length > 0
+          ? contacts
+              .filter((contacts) => {
+                if (query === "") {
+                  return contacts;
+                } else if (
+                  contacts.name.toLowerCase().includes(query.toLowerCase()) ||
+                  contacts.surname.toLowerCase().includes(query.toLowerCase())
+                ) {
+                  return contacts;
+                }
+              })
+              .map((contact: IContact) => {
+                return contact.userId === userId ? (
+                  <div key={contact.id} className="contact">
+                    <>
+                      <img
+                        className="contact-avatar"
+                        alt="фото контакта"
+                        src={contact.avatar}
+                      />
 
-                    <div>{contact.name}</div>
-                    <div>{contact.surname}</div>
-                  </>
+                      <div>{contact.name}</div>
+                      <div>{contact.surname}</div>
+                    </>
 
-                  <button
-                    style={{ width: "200px" }}
-                    onClick={() => {
-                      handleOpen();
-                      setContactById(contact);
-                    }}
-                  >
-                    Редактировать
-                  </button>
-                </div>
-              ) : null;
-            })
+                    <button
+                      style={{ width: "200px" }}
+                      onClick={() => {
+                        handleOpen();
+                        setContactById(contact);
+                      }}
+                    >
+                      Редактировать
+                    </button>
+                  </div>
+                ) : null;
+              })
           : "Список контактов пуст")}
       <EditContactModal
         open={open}
@@ -96,7 +73,6 @@ const Contacts = () => {
         editContactById={editContactById}
         setContactById={setContactById}
         setOpen={setOpen}
-        contacts={contacts}
       />
     </div>
   );

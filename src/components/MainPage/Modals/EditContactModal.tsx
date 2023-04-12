@@ -3,33 +3,48 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
-import { style } from "../../../utils/utils";
-import { useNavigate } from "react-router-dom";
+import { style, urlPattern, validName } from "../../../utils/utils";
 import { useAppSelector } from "../../../store/hooks";
 import {
   useEditContactMutation,
   useRemoveContactMutation,
 } from "../../../store/api/contactsApi";
 import { IContact } from "../../../store/types";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
+import ConfirmModal from "./ConfirmModal";
 
-const EditContactModal = ({
+type EditModalProps = {
+  open: boolean;
+  handleClose: () => void;
+  editContactById: IContact;
+  setContactById: (e: any) => void;
+  setOpen: (e: boolean) => void;
+};
+
+const EditContactModal: React.FC<EditModalProps> = ({
   open,
   handleClose,
   editContactById,
   setContactById,
   setOpen,
-  contacts,
-}: any) => {
-  const [editState, setEditState] = React.useState(false);
+}) => {
+  const [disabledButton, setDisabledButton] = React.useState(false);
+  const [editContactNameErr, setEditContactNameErr] = React.useState("");
+  const [editContactSurnameErr, setEditContactSurnameErr] = React.useState("");
+  const [editContactAvatarErr, setEditContactAvatarErr] = React.useState("");
 
-  const navigate = useNavigate();
+  const [openConfirmPopup, setOpenConfirmPopup] = React.useState(false);
+  const handleOpenConfirmPopup = () => setOpenConfirmPopup(true);
+  const handleCloseConfirmPopup = () => setOpenConfirmPopup(false);
+
   const userId = useAppSelector((state) => state.auth.userId);
-  const token = useAppSelector((state) => state.auth.token);
 
-  const [editContact] = useEditContactMutation();
+  const handleRemoveContact = async (contact: IContact) => {
+    await removeContact(contact);
+    setOpen(false);
+  };
   const [removeContact] = useRemoveContactMutation();
+  const [editContact] = useEditContactMutation();
 
   const handleUpdateContact = async () => {
     if (userId)
@@ -43,16 +58,64 @@ const EditContactModal = ({
     setOpen(false);
   };
 
-  const handleRemoveContact = async (contact: IContact) => {
-    await removeContact(contact);
+  const handleEditContactName = (editContactName: string) => {
+    setContactById((prev: IContact) => ({
+      ...prev,
+      name: editContactName,
+    }));
+    if (editContactName.length === 0) {
+      setDisabledButton(true);
+      setEditContactNameErr("Необходимо указать имя");
+      return;
+    }
+    if (!validName.test(editContactName)) {
+      setDisabledButton(true);
+      setEditContactNameErr("Укажите корректное имя");
+      return;
+    }
+    setDisabledButton(false);
+    setEditContactNameErr("");
+  };
+
+  const handleEditContactSurname = (editContactSurname: string) => {
+    setContactById((prev: IContact) => ({
+      ...prev,
+      surname: editContactSurname,
+    }));
+    if (!validName.test(editContactSurname)) {
+      setDisabledButton(true);
+      setEditContactSurnameErr("Укажите корректную фамилию");
+      return;
+    }
+    setDisabledButton(false);
+    setEditContactSurnameErr("");
+  };
+
+  const handleEditContactAvatar = (editContactAvatar: string) => {
+    setContactById((prev: IContact) => ({
+      ...prev,
+      avatar: editContactAvatar,
+    }));
+    if (!urlPattern.test(editContactAvatar)) {
+      setDisabledButton(true);
+      setEditContactAvatarErr("Укажите корректный URL");
+      return;
+    }
+    setDisabledButton(false);
+    setEditContactAvatarErr("");
   };
 
   React.useEffect(() => {
-    if (!userId && !token) {
-      navigate("/login");
+    if (editContactById.name === "") {
+      setDisabledButton(true);
     }
-  });
-  console.log(contacts);
+    if (!open) {
+      setContactById({ name: "", surname: "", avatar: "" });
+      setEditContactNameErr("");
+      setEditContactSurnameErr("");
+    }
+  }, [open, editContactById.name, setContactById]);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Fade in={open}>
@@ -61,15 +124,10 @@ const EditContactModal = ({
             type="text"
             label="Имя"
             value={editContactById.name}
-            onChange={(e) =>
-              setContactById((prev: IContact) => ({
-                ...prev,
-                name: e.target.value,
-              }))
-            }
+            onChange={(e) => handleEditContactName(e.target.value)}
             variant="filled"
           />
-          {/* <span>{newContactNameErr}</span> */}
+          <span>{editContactNameErr}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -77,35 +135,48 @@ const EditContactModal = ({
             type="text"
             label="Фамилия"
             value={editContactById.surname}
-            onChange={(e) =>
-              setContactById((prev: IContact) => ({
-                ...prev,
-                surname: e.target.value,
-              }))
-            }
+            onChange={(e) => handleEditContactSurname(e.target.value)}
             variant="filled"
           />
 
-          {/* <span>{newContactSurnameErr}</span> */}
+          <span>{editContactSurnameErr}</span>
+          <TextField
+            sx={{
+              mt: "10px",
+            }}
+            type="url"
+            label="Ссылка на аватар"
+            value={editContactById.avatar}
+            onChange={(e) => handleEditContactAvatar(e.target.value)}
+            variant="filled"
+          />
+          <span>{editContactAvatarErr}</span>
           <button
+            disabled={disabledButton}
             style={{ width: "200px", marginBottom: "10px" }}
             onClick={() => {
               handleUpdateContact();
             }}
-            // onClick={() => {
-            //   setEditState(true);
-            //   setContactById(contact);
-            // }}
           >
             Обновить
           </button>
           <Button
-            style={{ width: "200px", margin: "auto", border: "1px solid red" }}
-            onClick={() => handleRemoveContact(contacts)}
+            style={{
+              width: "200px",
+              margin: "auto",
+              border: "1px solid #985ace",
+            }}
+            onClick={() => handleOpenConfirmPopup()}
             variant="outlined"
           >
             Удалить
           </Button>
+          <ConfirmModal
+            openConfirmPopup={openConfirmPopup}
+            handleCloseConfirmPopup={handleCloseConfirmPopup}
+            handleRemoveContact={handleRemoveContact}
+            editContactById={editContactById}
+          />
         </Box>
       </Fade>
     </Modal>

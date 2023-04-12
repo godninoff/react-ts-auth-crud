@@ -3,29 +3,39 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import { nanoid } from "@reduxjs/toolkit";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/hooks";
 import { useAddContactMutation } from "../../../store/api/contactsApi";
 import TextField from "@mui/material/TextField";
 import "../../Login/Login.css";
-import { style, validName } from "../../../utils/utils";
-import { validationContactName } from "../../../store/validationSlice";
+import { style, urlPattern, validName } from "../../../utils/utils";
+import { useNavigate } from "react-router-dom";
 
-const AddContactModal = ({ open, handleClose, setOpen }: any) => {
+type IPopupProps = {
+  open: boolean;
+  handleClose: () => void;
+  setOpen: (e: boolean) => void;
+};
+
+const AddContactModal: React.FC<IPopupProps> = ({
+  open,
+  handleClose,
+  setOpen,
+}) => {
   const [contactName, setContactName] = React.useState("");
   const [contactSurname, setContactSurname] = React.useState("");
   const [contactAvatar, setContactAvatar] = React.useState("");
 
   const [newContactNameErr, setNewContactNameErr] = React.useState("");
   const [newContactSurnameErr, setNewContactSurnameErr] = React.useState("");
+  const [newContactAvatarErr, setNewContactAvatarErr] = React.useState("");
 
   const [disabledButton, setDisabledButton] = React.useState(false);
 
+  const token = useAppSelector((state) => state.auth.token);
   const userId = useAppSelector((state) => state.auth.userId);
-  const validation = useAppSelector((state) => state.validation.name);
 
   const [addContact] = useAddContactMutation();
-
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleAddContact = async () => {
     if (userId)
@@ -68,6 +78,23 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
     setDisabledButton(false);
     setNewContactSurnameErr("");
   };
+
+  const handleAddContactAvatar = (newContactAvatar: string) => {
+    setContactAvatar(newContactAvatar);
+    if (!urlPattern.test(newContactAvatar)) {
+      setDisabledButton(true);
+      setNewContactAvatarErr("Укажите корректный URL");
+      return;
+    }
+    setDisabledButton(false);
+    setNewContactAvatarErr("");
+  };
+
+  React.useEffect(() => {
+    if (!userId && !token) {
+      navigate("/login");
+    }
+  });
 
   React.useEffect(() => {
     if (contactName === "") {
@@ -112,9 +139,10 @@ const AddContactModal = ({ open, handleClose, setOpen }: any) => {
             type="url"
             label="Ссылка на аватар"
             value={contactAvatar}
-            onChange={(e) => setContactAvatar(e.target.value)}
+            onChange={(e) => handleAddContactAvatar(e.target.value)}
             variant="filled"
           />
+          <span>{newContactAvatarErr}</span>
           <button onClick={handleAddContact} disabled={disabledButton}>
             Добавить контакт
           </button>

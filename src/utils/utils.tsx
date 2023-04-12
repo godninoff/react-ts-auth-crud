@@ -1,5 +1,4 @@
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { useState } from "react";
 
 // https:redux-toolkit.js.org/rtk-query/usage-with-typescript#inline-error-handling-example
 
@@ -22,7 +21,10 @@ export function isErrorWithMessage(
 
 export const validEmail = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 export const validPsw = /^[A-Za-z0-9]{4,16}$/;
-export const validName = /^[А-ЯЁA-Z][а-яёa-z]{1,15}$/;
+export const validName = /[А-ЯЁA-Z][а-яёa-z]{1,15}$/;
+export const urlPattern =
+  // eslint-disable-next-line no-useless-escape
+  /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
 
 export const style = {
   position: "absolute" as "absolute",
