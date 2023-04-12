@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction, Dispatch } from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -17,7 +17,7 @@ type EditModalProps = {
   open: boolean;
   handleClose: () => void;
   editContactById: IContact;
-  setContactById: (e: any) => void;
+  setContactById: Dispatch<SetStateAction<IContact>>;
   setOpen: (e: boolean) => void;
 };
 
@@ -110,7 +110,7 @@ const EditContactModal: React.FC<EditModalProps> = ({
       setDisabledButton(true);
     }
     if (!open) {
-      setContactById({ name: "", surname: "", avatar: "" });
+      setContactById({ name: "", surname: "", avatar: "", id: "" });
       setEditContactNameErr("");
       setEditContactSurnameErr("");
     }
