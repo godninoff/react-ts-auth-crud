@@ -32,6 +32,13 @@
       "name": "Jeff",
       "surname": "Bezos",
       "userId": 1
+    },
+    {
+      "id": "cE35",
+      "avatar": "https://redux-toolkit.js.org/usage/immer-reducers#resetting-and-replacing-state",
+      "name": "Add",
+      "surname": "Add",
+      "userId": 1
     }
   ]
 }

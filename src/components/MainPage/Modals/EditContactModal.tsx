@@ -3,8 +3,8 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
-import { style, urlPattern, validName } from "../../../utils/utils";
-import { useAppSelector } from "../../../store/hooks";
+import { style } from "../../../utils/utils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   useEditContactMutation,
   useRemoveContactMutation,
@@ -12,6 +12,12 @@ import {
 import { IContact } from "../../../store/types";
 import Button from "@mui/material/Button";
 import ConfirmModal from "./ConfirmModal";
+import {
+  resetData,
+  validationContactAvatar,
+  validationContactName,
+  validationContactSurname,
+} from "../../../store/validationSlice";
 
 type EditModalProps = {
   open: boolean;
@@ -28,16 +34,23 @@ const EditContactModal: React.FC<EditModalProps> = ({
   setContactById,
   setOpen,
 }) => {
-  const [disabledButton, setDisabledButton] = React.useState(false);
-  const [editContactNameErr, setEditContactNameErr] = React.useState("");
-  const [editContactSurnameErr, setEditContactSurnameErr] = React.useState("");
-  const [editContactAvatarErr, setEditContactAvatarErr] = React.useState("");
-
   const [openConfirmPopup, setOpenConfirmPopup] = React.useState(false);
   const handleOpenConfirmPopup = () => setOpenConfirmPopup(true);
   const handleCloseConfirmPopup = () => setOpenConfirmPopup(false);
 
+  const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
+  const validationState = useAppSelector((state) => state.validation.name);
+  const disabledState = useAppSelector((state) => state.validation.disabled);
+  const validatonErrName = useAppSelector(
+    (state) => state.validation.contactNameErr
+  );
+  const validatonErrSurname = useAppSelector(
+    (state) => state.validation.contactSurnameErr
+  );
+  const validatonErrAvatar = useAppSelector(
+    (state) => state.validation.contactAvatarErr
+  );
 
   const handleRemoveContact = async (contact: IContact) => {
     await removeContact(contact);
@@ -63,18 +76,7 @@ const EditContactModal: React.FC<EditModalProps> = ({
       ...prev,
       name: editContactName,
     }));
-    if (editContactName.length === 0) {
-      setDisabledButton(true);
-      setEditContactNameErr("Необходимо указать имя");
-      return;
-    }
-    if (!validName.test(editContactName)) {
-      setDisabledButton(true);
-      setEditContactNameErr("Укажите корректное имя");
-      return;
-    }
-    setDisabledButton(false);
-    setEditContactNameErr("");
+    dispatch(validationContactName(editContactName));
   };
 
   const handleEditContactSurname = (editContactSurname: string) => {
@@ -82,13 +84,7 @@ const EditContactModal: React.FC<EditModalProps> = ({
       ...prev,
       surname: editContactSurname,
     }));
-    if (!validName.test(editContactSurname)) {
-      setDisabledButton(true);
-      setEditContactSurnameErr("Укажите корректную фамилию");
-      return;
-    }
-    setDisabledButton(false);
-    setEditContactSurnameErr("");
+    dispatch(validationContactSurname(editContactSurname));
   };
 
   const handleEditContactAvatar = (editContactAvatar: string) => {
@@ -96,25 +92,14 @@ const EditContactModal: React.FC<EditModalProps> = ({
       ...prev,
       avatar: editContactAvatar,
     }));
-    if (!urlPattern.test(editContactAvatar)) {
-      setDisabledButton(true);
-      setEditContactAvatarErr("Укажите корректный URL");
-      return;
-    }
-    setDisabledButton(false);
-    setEditContactAvatarErr("");
+    validationState && dispatch(validationContactAvatar(editContactAvatar));
   };
 
   React.useEffect(() => {
-    if (editContactById.name === "") {
-      setDisabledButton(true);
-    }
     if (!open) {
-      setContactById({ name: "", surname: "", avatar: "", id: "" });
-      setEditContactNameErr("");
-      setEditContactSurnameErr("");
+      dispatch(resetData());
     }
-  }, [open, editContactById.name, setContactById]);
+  }, [open]);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -127,7 +112,7 @@ const EditContactModal: React.FC<EditModalProps> = ({
             onChange={(e) => handleEditContactName(e.target.value)}
             variant="filled"
           />
-          <span>{editContactNameErr}</span>
+          <span>{validatonErrName}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -139,7 +124,7 @@ const EditContactModal: React.FC<EditModalProps> = ({
             variant="filled"
           />
 
-          <span>{editContactSurnameErr}</span>
+          <span>{validatonErrSurname}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -150,9 +135,9 @@ const EditContactModal: React.FC<EditModalProps> = ({
             onChange={(e) => handleEditContactAvatar(e.target.value)}
             variant="filled"
           />
-          <span>{editContactAvatarErr}</span>
+          <span>{validatonErrAvatar}</span>
           <button
-            disabled={disabledButton}
+            disabled={disabledState}
             style={{ width: "200px", marginBottom: "10px" }}
             onClick={() => {
               handleUpdateContact();

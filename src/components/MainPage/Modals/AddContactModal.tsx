@@ -3,12 +3,19 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import { nanoid } from "@reduxjs/toolkit";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { useAddContactMutation } from "../../../store/api/contactsApi";
 import TextField from "@mui/material/TextField";
 import "../../Login/Login.css";
-import { style, urlPattern, validName } from "../../../utils/utils";
+import { style } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
+import {
+  resetData,
+  setDisabledState,
+  validationContactAvatar,
+  validationContactName,
+  validationContactSurname,
+} from "../../../store/validationSlice";
 
 type IPopupProps = {
   open: boolean;
@@ -25,17 +32,23 @@ const AddContactModal: React.FC<IPopupProps> = ({
   const [contactSurname, setContactSurname] = React.useState("");
   const [contactAvatar, setContactAvatar] = React.useState("");
 
-  const [newContactNameErr, setNewContactNameErr] = React.useState("");
-  const [newContactSurnameErr, setNewContactSurnameErr] = React.useState("");
-  const [newContactAvatarErr, setNewContactAvatarErr] = React.useState("");
-
-  const [disabledButton, setDisabledButton] = React.useState(false);
-
   const token = useAppSelector((state) => state.auth.token);
   const userId = useAppSelector((state) => state.auth.userId);
+  const validationState = useAppSelector((state) => state.validation.name);
+  const disabledState = useAppSelector((state) => state.validation.disabled);
+  const validatonErrName = useAppSelector(
+    (state) => state.validation.contactNameErr
+  );
+  const validatonErrSurname = useAppSelector(
+    (state) => state.validation.contactSurnameErr
+  );
+  const validatonErrAvatar = useAppSelector(
+    (state) => state.validation.contactAvatarErr
+  );
 
   const [addContact] = useAddContactMutation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleAddContact = async () => {
     if (userId)
@@ -54,40 +67,17 @@ const AddContactModal: React.FC<IPopupProps> = ({
 
   const handleAddContactName = (newContactName: string) => {
     setContactName(newContactName);
-    if (newContactName.length === 0) {
-      setDisabledButton(true);
-      setNewContactNameErr("Необходимо указать имя");
-      return;
-    }
-    if (!validName.test(newContactName)) {
-      setDisabledButton(true);
-      setNewContactNameErr("Укажите корректное имя");
-      return;
-    }
-    setDisabledButton(false);
-    setNewContactNameErr("");
+    dispatch(validationContactName(newContactName));
   };
 
   const handleAddContactSurname = (newContactSurname: string) => {
     setContactSurname(newContactSurname);
-    if (!validName.test(newContactSurname)) {
-      setDisabledButton(true);
-      setNewContactSurnameErr("Укажите корректную фамилию");
-      return;
-    }
-    setDisabledButton(false);
-    setNewContactSurnameErr("");
+    dispatch(validationContactSurname(newContactSurname));
   };
 
   const handleAddContactAvatar = (newContactAvatar: string) => {
     setContactAvatar(newContactAvatar);
-    if (!urlPattern.test(newContactAvatar)) {
-      setDisabledButton(true);
-      setNewContactAvatarErr("Укажите корректный URL");
-      return;
-    }
-    setDisabledButton(false);
-    setNewContactAvatarErr("");
+    validationState && dispatch(validationContactAvatar(newContactAvatar));
   };
 
   React.useEffect(() => {
@@ -97,17 +87,16 @@ const AddContactModal: React.FC<IPopupProps> = ({
   });
 
   React.useEffect(() => {
-    if (contactName === "") {
-      setDisabledButton(true);
+    if (validationState === "") {
+      dispatch(setDisabledState());
     }
     if (!open) {
       setContactName("");
       setContactSurname("");
       setContactAvatar("");
-      setNewContactNameErr("");
-      setNewContactSurnameErr("");
+      dispatch(resetData());
     }
-  }, [contactName, open]);
+  }, [open, validationState]);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -120,7 +109,7 @@ const AddContactModal: React.FC<IPopupProps> = ({
             onChange={(e) => handleAddContactName(e.target.value)}
             variant="filled"
           />
-          <span>{newContactNameErr}</span>
+          <span>{validatonErrName}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -131,7 +120,7 @@ const AddContactModal: React.FC<IPopupProps> = ({
             onChange={(e) => handleAddContactSurname(e.target.value)}
             variant="filled"
           />
-          <span>{newContactSurnameErr}</span>
+          <span>{validatonErrSurname}</span>
           <TextField
             sx={{
               mt: "10px",
@@ -142,8 +131,8 @@ const AddContactModal: React.FC<IPopupProps> = ({
             onChange={(e) => handleAddContactAvatar(e.target.value)}
             variant="filled"
           />
-          <span>{newContactAvatarErr}</span>
-          <button onClick={handleAddContact} disabled={disabledButton}>
+          <span>{validatonErrAvatar}</span>
+          <button onClick={handleAddContact} disabled={disabledState}>
             Добавить контакт
           </button>
         </Box>
